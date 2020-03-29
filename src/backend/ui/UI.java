@@ -33,7 +33,7 @@ public class UI {
         jconfig.put("token", token);
         jconfig.put("ip", map.get("ip"));
         jconfig.put("port", map.get("port"));
-        Json.SaveJsonConfig("D:/Курсач ПСП/gui/config/config.json", Json.JsonToString(jconfig));
+        Json.SaveJsonConfig("./config.json", Json.JsonToString(jconfig));
     }
     public static String mapGet(String key)
     {
@@ -45,7 +45,12 @@ public class UI {
     }
     public static void Initialize()
     {
-        Json.PharseJsonConfig("D:/Курсач ПСП/gui/config/config.json");
+        Json.PharseJsonConfig("./config.json");
+        if(map.get("ip").toString().equals("") || map.get("port").toString().equals(""))
+        {
+            map.put("ip","localhost");
+            map.put("port","9000");
+        }
         Connection.ServerInfo(map.get("ip").toString(), map.get("port").toString());
         token = map.get("token").toString();
         JOptionPane.showMessageDialog(null, map.get("ip").toString().concat(":").concat(map.get("port").toString()));

@@ -26,15 +26,21 @@ import javax.swing.JOptionPane;
             private static String port;
             public static boolean CheckConnection(String ip, String prt) throws IOException
             {
-                Socket sock = new Socket(ip,parseInt(prt));
-                if(sock.isConnected())
-                {
-                    sock.close();
-                    return true;
-                }
-                else
-                {
-                    sock.close();
+                try{
+
+
+                    Socket sock = new Socket(ip,parseInt(prt));
+                    if(sock.isConnected())
+                    {
+                        sock.close();
+                        return true;
+                    }
+                    else
+                    {
+                        sock.close();
+                        return false;
+                    }
+                }catch(Exception e){
                     return false;
                 }
             }

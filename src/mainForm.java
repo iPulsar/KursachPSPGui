@@ -8,12 +8,15 @@
  *
  * @author Orlovskiy
  */
+import backend.Connection.Connection;
 import backend.ui.*;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import backend.Functions.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import org.json.simple.JSONObject;
@@ -37,54 +40,57 @@ public class mainForm extends javax.swing.JFrame {
             public void run() {
                 while(true) { //бесконечно крутим
                     try {
-                        HashMap messages = new HashMap();
-                        HashMap board = new HashMap();
-                        HashMap advertise = new HashMap();
-                        messages = UI.updateData("messages");
-                        board = UI.updateData("board");
-                        advertise = UI.updateData("advertise");
-                        if(messages.get("error") != null) System.out.println( "Cannot update user data.\n probably you are not aunthorized\n or token expired");
-                        else 
+                        if(Connection.CheckConnection(UI.mapGet("ip"), UI.mapGet("port")))
                         {
-                            jTextArea1.setText("");
-                            if (Integer.parseInt(advertise.get("numberOfRow").toString()) > 1)
-                            for(int i = 1; i <= Integer.parseInt(advertise.get("numberOfRow").toString()); i ++)
+                            
+                            HashMap messages = UI.updateData("messages");
+                            HashMap board = UI.updateData("board");
+                            HashMap advertise = UI.updateData("advertise");
+                            if(messages.get("error") != null) System.out.println( "Cannot update user data.\n probably you are not aunthorized\n or token expired");
+                            else if(Connection.CheckConnection(UI.mapGet("ip"), UI.mapGet("port")))
                             {
-                                jTextArea1.append("Date: "+advertise.get(String.valueOf(i)+"_date").toString()+" Owner: "+advertise.get(String.valueOf(i)+"_username").toString()+"\n "+advertise.get(String.valueOf(i)+"_advertise")+"\n \n");
-                            }
-                            else jTextArea1.append("Date: "+advertise.get("1_date").toString()+" Owner: "+advertise.get("1_username").toString()+"  \n"+advertise.get("1_advertise")+"\n");
-                            DefaultTableModel model = new DefaultTableModel();
-                            jTable2.setModel(model);
-                            model.addColumn("date");
-                            model.addColumn("Username");
-                            model.addColumn("message");
-                            if (Integer.parseInt(board.get("numberOfRow").toString()) > 1)
-                            for(int i = 1; i <= Integer.parseInt(advertise.get("numberOfRow").toString()); i ++)
-                            {
-                                model.addRow(new Object[]{board.get(String.valueOf(i)+"_date").toString(),board.get(String.valueOf(i)+"_username").toString(), board.get(String.valueOf(i)+"_bmessage").toString()});
-                            }
-                            else model.addRow(new Object[]{board.get("1_date").toString(),board.get("1_username").toString(), board.get("1_bmessage").toString()});
-                            DefaultTableModel model2 = new DefaultTableModel();
-                            jTable3.setModel(model2);
-                            model2.addColumn("date");
-                            model2.addColumn("Username");
-                            model2.addColumn("message");
-                            if (Integer.parseInt(messages.get("numberOfRow").toString()) > 1)
-                            for(int i = 1; i <= Integer.parseInt(messages.get("numberOfRow").toString()); i ++)
-                            {
-                                if(messages.get(String.valueOf(i)+"_anon") == "1") messages.put(String.valueOf(i)+"_username", "Anon");
-                                model2.addRow(new Object[]{messages.get(String.valueOf(i)+"_date").toString(),messages.get(String.valueOf(i)+"_username").toString(), messages.get(String.valueOf(i)+"_message").toString()});
-                            }
-                            else {
-                                if(messages.get("1_anon").equals("1")) messages.put("1_username", "Anon");
-                                model2.addRow(new Object[]{messages.get("1_date").toString(),messages.get("1_username").toString(), messages.get("1_message").toString()});
-                            }
+                                jTextArea1.setText("");
+                                if (Integer.parseInt(advertise.get("numberOfRow").toString()) > 1)
+                                for(int i = 1; i <= Integer.parseInt(advertise.get("numberOfRow").toString()); i ++)
+                                {
+                                    jTextArea1.append("Date: "+advertise.get(String.valueOf(i)+"_date").toString()+" Owner: "+advertise.get(String.valueOf(i)+"_username").toString()+"\n "+advertise.get(String.valueOf(i)+"_advertise")+"\n \n");
+                                }
+                                else jTextArea1.append("Date: "+advertise.get("1_date").toString()+" Owner: "+advertise.get("1_username").toString()+"  \n"+advertise.get("1_advertise")+"\n");
+                                DefaultTableModel model = new DefaultTableModel();
+                                jTable2.setModel(model);
+                                model.addColumn("date");
+                                model.addColumn("Username");
+                                model.addColumn("message");
+                                if (Integer.parseInt(board.get("numberOfRow").toString()) > 1)
+                                for(int i = 1; i <= Integer.parseInt(advertise.get("numberOfRow").toString()); i ++)
+                                {
+                                    model.addRow(new Object[]{board.get(String.valueOf(i)+"_date").toString(),board.get(String.valueOf(i)+"_username").toString(), board.get(String.valueOf(i)+"_bmessage").toString()});
+                                }
+                                else model.addRow(new Object[]{board.get("1_date").toString(),board.get("1_username").toString(), board.get("1_bmessage").toString()});
+                                DefaultTableModel model2 = new DefaultTableModel();
+                                jTable3.setModel(model2);
+                                model2.addColumn("date");
+                                model2.addColumn("Username");
+                                model2.addColumn("message");
+                                if (Integer.parseInt(messages.get("numberOfRow").toString()) > 1)
+                                for(int i = 1; i <= Integer.parseInt(messages.get("numberOfRow").toString()); i ++)
+                                {
+                                    if(messages.get(String.valueOf(i)+"_anon") == "1") messages.put(String.valueOf(i)+"_username", "Anon");
+                                    model2.addRow(new Object[]{messages.get(String.valueOf(i)+"_date").toString(),messages.get(String.valueOf(i)+"_username").toString(), messages.get(String.valueOf(i)+"_message").toString()});
+                                }
+                                else {
+                                    if(messages.get("1_anon").equals("1")) messages.put("1_username", "Anon");
+                                    model2.addRow(new Object[]{messages.get("1_date").toString(),messages.get("1_username").toString(), messages.get("1_message").toString()});
+                                }
 
+                            }
                         }
                         Thread.sleep(15*1000); // 4 секунды в милисекундах
                         
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    } catch (IOException ex) {
+                        Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
